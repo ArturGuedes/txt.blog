@@ -177,6 +177,7 @@ article[\[\]-index] code {
     border-radius: 4px;
     font-size: 0.875em;
     font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+    display: inline-block;
 }
 
 article[\[\]-index] pre {
@@ -234,6 +235,22 @@ article[\[\]-index] img {
     border-radius: 1rem;
     margin: 1rem 0;
     display: block;
+}
+
+article[\[\]-index] div[\[\]-content] {
+    display: block;
+}
+
+article[\[\]-index] div[\[\]-content] > * {
+    margin: 1rem 0;
+}
+
+article[\[\]-index] div[\[\]-content] > *:first-child {
+    margin-top: 0;
+}
+
+article[\[\]-index] div[\[\]-content] > *:last-child {
+    margin-bottom: 0;
 }
 
 article[\[\]-index] [\[\]-post] {

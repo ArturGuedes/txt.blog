@@ -33,7 +33,6 @@ function parsePost(postContent) {
     title: extractSimpleTag(postContent, 't'),
     date: extractSimpleTag(postContent, 'd'),
     author: extractSimpleTag(postContent, 'a'),
-    link: extractSimpleTag(postContent, 'link'),
     thumb: extractSimpleTag(postContent, 'thumb'),
     tags: tags,
     content: extractContentTag(postContent, 'txt')
@@ -52,7 +51,7 @@ function renderPost(post) {
     <div []-post>
     ${post.title ? `<h1><a href="?id=${post.index}">${post.title}</a></h1>` : ''}
       <div []-meta>
-      ${post.date ? `<span []-date>${post.date}</span>` : ''}
+      ${post.date ? `<span []-date>${new Date(post.date).toLocaleDateString()}</span>` : ''}
       ${post.author ? `- <a []-author href="?author=${encodeURIComponent(post.author)}">${post.author}</a>` : ''}
       </div>
       ${tagsHTML}
@@ -81,7 +80,12 @@ async function initBlog(
 
     const postsText = content.split(/\n--\n/).map(postContent => postContent.trim()).filter(p => p)
 
-    let posts = postsText.map((postContent, index) => ({ ...parsePost(postContent), index }))
+    let posts = postsText.map((postContent) => (parsePost(postContent)))
+    // Sort by date ascending (oldest first) to assign indices
+    const sortedForIndexing = [...posts].sort((a, b) => new Date(a.date) - new Date(b.date))
+    posts = sortedForIndexing.map((post, index) => ({ ...post, index }))
+    // Reverse to display newest first
+    posts.reverse()
 
     // Filter by id if parameter exists
     if (filterId !== null) {
@@ -104,7 +108,7 @@ async function initBlog(
 
     const postsHTML = posts.map(postContent => renderPost(postContent)).filter(html => html)
 
-    if (debug) console.log('Posts HTML:', postsHTML)
+    // if (debug) console.log('Posts HTML:', postsHTML)
     if (blogContainer) {
       blogContainer.innerHTML = postsHTML.join('')
 
