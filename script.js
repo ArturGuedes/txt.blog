@@ -26,18 +26,26 @@ function extractContentTag(content, tagName) {
 }
 
 function parsePost(postContent) {
+  const tagsString = extractSimpleTag(postContent, 'tag')
+  const tags = tagsString ? tagsString.split('|').map(tag => tag.trim()).filter(t => t) : []
+
   const post = {
     title: extractSimpleTag(postContent, 't'),
     date: extractSimpleTag(postContent, 'd'),
     author: extractSimpleTag(postContent, 'a'),
     link: extractSimpleTag(postContent, 'link'),
     thumb: extractSimpleTag(postContent, 'thumb'),
+    tags: tags,
     content: extractContentTag(postContent, 'txt')
   }
   return post
 }
 
 function renderPost(post) {
+  const tagsHTML = post.tags && post.tags.length > 0
+    ? `<div []-tags>${post.tags.map(tag => `<a href="?tag=${encodeURIComponent(tag)}" []-tag>${tag}</a>`).join('')}</div>`
+    : ''
+
   return `
     <article id="${post.title}" []-index="${post.index}">
     ${post.thumb ? `<img []-thumb src="${post.thumb}" alt="${post.title}">` : ''}
@@ -47,6 +55,7 @@ function renderPost(post) {
       ${post.date ? `<span []-date>${post.date}</span>` : ''}
       ${post.author ? `- <a []-author href="?author=${encodeURIComponent(post.author)}">${post.author}</a>` : ''}
       </div>
+      ${tagsHTML}
       ${post.content ? `<div []-content>${post.content}</div>` : ''}
       </div>
     </article>
@@ -68,6 +77,7 @@ async function initBlog(
     const urlParams = new URLSearchParams(window.location.search)
     const filterId = urlParams.get('id')
     const filterAuthor = urlParams.get('author')
+    const filterTag = urlParams.get('tag')
 
     const postsText = content.split(/\n--\n/).map(postContent => postContent.trim()).filter(p => p)
 
@@ -84,6 +94,12 @@ async function initBlog(
     if (filterAuthor !== null) {
       posts = posts.filter(post => post.author && post.author.toLowerCase().includes(filterAuthor.toLowerCase()))
       if (debug) console.log(`Filtering by author=${filterAuthor}`, posts)
+    }
+
+    // Filter by tag if parameter exists
+    if (filterTag !== null) {
+      posts = posts.filter(post => post.tags && post.tags.some(tag => tag.toLowerCase() === filterTag.toLowerCase()))
+      if (debug) console.log(`Filtering by tag=${filterTag}`, posts)
     }
 
     const postsHTML = posts.map(postContent => renderPost(postContent)).filter(html => html)
