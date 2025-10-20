@@ -1,0 +1,30 @@
+{
+  "name": "txt.blog",
+  "version": "1.0.0",
+  "description": "Um gerador de blog estático minimalista que funciona inteiramente no navegador, sem necessidade de backend ou processamento do lado do servidor.",
+  "homepage": "https://github.com/ArturGuedes/MicroBlog#readme",
+  "bugs": {
+    "url": "https://github.com/ArturGuedes/MicroBlog/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArturGuedes/MicroBlog.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "[txt].blog.js",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "minify:js": "terser script.js -o dist/script.min.js -c -m",
+    "minify:css": "csso style.css -o dist/style.min.css",
+    "minify": "npm run minify:js && npm run minify:css",
+    "build": "npm run minify"
+  },
+  "devDependencies": {
+    "csso-cli": "^4.0.2",
+    "terser": "^5.44.0",
+    "vite": "^6.4.0"
+  }
+}
